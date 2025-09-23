@@ -7,8 +7,11 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
+    "prepare": "husky",
     "test": "vitest --run",
-    "prepare": "husky"
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -44,9 +47,11 @@
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.19.17",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "^3.2.4",
     "eslint": "^9.36.0",
     "eslint-config-next": "15.5.3",
     "husky": "^9.1.7",
