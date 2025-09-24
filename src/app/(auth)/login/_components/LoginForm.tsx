@@ -25,7 +25,8 @@ export function LoginForm({ action }: Props) {
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(schema),
-    mode: "onTouched",
+    mode: "onSubmit",
+    reValidateMode: "onChange",
   });
 
   async function handleValidateAndSubmit(e: React.FormEvent<HTMLFormElement>) {
