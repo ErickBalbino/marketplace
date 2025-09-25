@@ -107,7 +107,7 @@ export function RegisterForm({ next = "" }: RegisterFormProps) {
                 autoComplete="name"
                 disabled={pending}
                 placeholder="Seu nome"
-                className={`w-full rounded-xl border bg-white pl-10 pr-3 py-3 outline-none placeholder:text-slate-400 focus:ring-1 focus:ring-brand/40 focus:border-brand-700 ${
+                className={`w-full rounded-xl border border-slate-400 bg-white pl-10 pr-3 py-3 outline-none placeholder:text-slate-400 focus:ring-1 focus:ring-brand/40 focus:border-brand-700 ${
                   showError("name")
                     ? "border-error-300 focus:border-error-400 focus:ring-error-200"
                     : ""
@@ -141,7 +141,7 @@ export function RegisterForm({ next = "" }: RegisterFormProps) {
                 autoComplete="email"
                 disabled={pending}
                 placeholder="voce@email.com"
-                className={`w-full rounded-xl border bg-white pl-10 pr-3 py-3 outline-none placeholder:text-slate-400 focus:ring-1 focus:ring-brand/40 focus:border-brand-700 ${
+                className={`w-full rounded-xl border border-slate-400 bg-white pl-10 pr-3 py-3 outline-none placeholder:text-slate-400 focus:ring-1 focus:ring-brand/40 focus:border-brand-700 ${
                   showError("email")
                     ? "border-error-300 focus:border-error-400 focus:ring-error-200"
                     : ""
@@ -188,7 +188,7 @@ export function RegisterForm({ next = "" }: RegisterFormProps) {
                     onAccept={(value: string) => field.onChange(value ?? "")}
                     onBlur={field.onBlur}
                     readOnly={pending}
-                    className={`w-full rounded-xl border bg-white pl-10 pr-3 py-3 outline-none placeholder:text-slate-400 focus:ring-1 focus:ring-brand/40 focus:border-brand-700 ${
+                    className={`w-full rounded-xl border border-slate-400 bg-white pl-10 pr-3 py-3 outline-none placeholder:text-slate-400 focus:ring-1 focus:ring-brand/40 focus:border-brand-700 ${
                       showError("phone")
                         ? "border-error-300 focus:border-error-400 focus:ring-error-200"
                         : ""
@@ -234,7 +234,7 @@ export function RegisterForm({ next = "" }: RegisterFormProps) {
                     onAccept={(value: string) => field.onChange(value ?? "")}
                     onBlur={field.onBlur}
                     readOnly={pending}
-                    className={`w-full rounded-xl border bg-white pl-10 pr-3 py-3 outline-none placeholder:text-slate-400 focus:ring-1 focus:ring-brand/40 focus:border-brand-700 ${
+                    className={`w-full rounded-xl border border-slate-400 bg-white pl-10 pr-3 py-3 outline-none placeholder:text-slate-400 focus:ring-1 focus:ring-brand/40 focus:border-brand-700 ${
                       showError("cpf")
                         ? "border-error-300 focus:border-error-400 focus:ring-error-200"
                         : ""
@@ -272,7 +272,7 @@ export function RegisterForm({ next = "" }: RegisterFormProps) {
                 autoComplete="new-password"
                 disabled={pending}
                 placeholder="••••••"
-                className={`w-full rounded-xl border bg-white pl-10 pr-10 py-3 outline-none placeholder:text-slate-400 focus:border-brand focus:ring-1 focus:ring-brand/40 focus:border-brand-700 ${
+                className={`w-full rounded-xl border border-slate-400 bg-white pl-10 pr-10 py-3 outline-none placeholder:text-slate-400 focus:border-brand focus:ring-1 focus:ring-brand/40 focus:border-brand-700 ${
                   showError("password")
                     ? "border-error-300 focus:border-error-400 focus:ring-error-200"
                     : ""
@@ -315,7 +315,7 @@ export function RegisterForm({ next = "" }: RegisterFormProps) {
                 autoComplete="new-password"
                 disabled={pending}
                 placeholder="••••••"
-                className={`w-full rounded-xl border bg-white pl-10 pr-10 py-3 outline-none placeholder:text-slate-400 focus:border-brand focus:ring-1 focus:ring-brand/40 focus:border-brand-700 ${
+                className={`w-full rounded-xl border border-slate-400 bg-white pl-10 pr-10 py-3 outline-none placeholder:text-slate-400 focus:border-brand focus:ring-1 focus:ring-brand/40 focus:border-brand-700 ${
                   showError("confirm")
                     ? "border-error-300 focus:border-error-400 focus:ring-error-200"
                     : ""

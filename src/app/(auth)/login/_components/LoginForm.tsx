@@ -76,7 +76,7 @@ export function LoginForm({ action, next = "" }: Props) {
               autoCapitalize="none"
               placeholder="voce@email.com"
               disabled={pending}
-              className={`w-full rounded-xl border bg-white pl-10 pr-3 py-3 outline-none placeholder:text-slate-400 focus:ring-1 focus:ring-brand/40 focus:border-brand-700 ${errors.email ? "border-error-300 focus:border-error-400 focus:ring-error-200" : ""}`}
+              className={`w-full rounded-xl border border-slate-400 bg-white pl-10 pr-3 py-3 outline-none placeholder:text-slate-400 focus:ring-1 focus:ring-brand/40 focus:border-brand-700 ${errors.email ? "border-error-300 focus:border-error-400 focus:ring-error-200" : ""}`}
               aria-invalid={!!errors.email}
               aria-describedby={errors.email ? "email-error" : undefined}
               {...register("email")}
@@ -110,7 +110,10 @@ export function LoginForm({ action, next = "" }: Props) {
               spellCheck={false}
               placeholder="••••••"
               disabled={pending}
-              className={`w-full rounded-xl border bg-white pl-10 pr-10 py-3 outline-none placeholder:text-slate-400 focus:border-brand focus:ring-1 focus:ring-brand/40 focus:border-brand-700 ${errors.password ? "border-error-300 focus:border-error-400 focus:ring-error-200" : ""}`}
+              className={`w-full rounded-xl border border-slate-400 bg-white pl-10 pr-10 py-3
+              outline-none placeholder:text-slate-400 transition-colors
+              focus:border-brand-700 focus:ring-2 focus:ring-brand/30
+              ${errors.password ? "border-error-300 focus:border-error-400 focus:ring-error-200" : ""}`}
               aria-invalid={!!errors.password}
               aria-describedby={errors.password ? "password-error" : undefined}
               {...register("password")}

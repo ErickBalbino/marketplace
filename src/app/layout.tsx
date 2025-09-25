@@ -2,6 +2,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 
+import ProgressLoader from "@/components/ProgressLoader";
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -26,6 +28,8 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning lang="pt-BR">
       <body className={`${inter.variable} ${jetbrains.variable} min-h-dvh`}>
+        <ProgressLoader />
+
         {children}
       </body>
     </html>

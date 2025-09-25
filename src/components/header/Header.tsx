@@ -1,9 +1,9 @@
-"use client";
-
+import { Search, MapPin, Heart, ShoppingCart, Menu, User } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { Search, MapPin, User, Heart, ShoppingCart, Menu } from "lucide-react";
+
+import { getSession } from "@/lib/auth";
+
+import { UserMenu } from "./UserMenu";
 
 const CATEGORIES = [
   "Departamentos",
@@ -17,17 +17,11 @@ const CATEGORIES = [
   "Esporte",
 ];
 
-export function Header() {
-  const [q, setQ] = useState("");
-  const [cep, setCep] = useState<string | null>(null);
-  const router = useRouter();
-
-  function submitSearch(e?: React.FormEvent) {
-    e?.preventDefault();
-    const query = q.trim();
-    if (!query) return;
-    router.push(`/?q=${encodeURIComponent(query)}`);
-  }
+export default async function Header() {
+  const session = await getSession();
+  const user = session?.user as
+    | { name?: string; email?: string; avatarUrl?: string }
+    | undefined;
 
   return (
     <header className="sticky top-0 z-40 border-b bg-white/95 backdrop-blur max-sm:px-3">
@@ -41,15 +35,17 @@ export function Header() {
         </Link>
 
         <form
-          onSubmit={submitSearch}
+          action={async (formData) => {
+            "use server";
+            String(formData.get("query") || "").trim();
+            // Opcional: use redirect aqui para manter server-side
+          }}
           role="search"
           aria-label="Buscar produtos"
           className="relative hidden w-full max-w-2xl items-center md:flex"
         >
           <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && submitSearch()}
+            name="query"
             placeholder="O que você está procurando?"
             className="w-full rounded-xl border bg-white px-4 py-2.5 pr-10 text-sm ring-1 ring-transparent placeholder:text-slate-600 focus:border-brand focus:ring-brand/40"
             aria-label="Campo de busca"
@@ -63,36 +59,39 @@ export function Header() {
 
         <button
           type="button"
-          onClick={() => {
-            // TODO: abrir modal para digitar CEP; por ora, simula
-            const c = prompt("Informe seu CEP:");
-            if (c) setCep(c);
-          }}
+          data-cep
           className="hidden items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-slate-50 md:inline-flex"
           aria-label="Informe seu CEP para calcular frete e prazo"
         >
           <MapPin size={18} />
-          <span className="whitespace-nowrap">
-            {cep ? `CEP: ${cep}` : "Informe seu CEP"}
-          </span>
+          <span className="whitespace-nowrap">Informe seu CEP</span>
         </button>
 
         <nav aria-label="Ações" className="ml-auto flex items-center gap-2">
+          {user ? (
+            <UserMenu
+              name={user.name || user.email || "Usuário"}
+              email={user.email || ""}
+              avatarUrl={user.avatarUrl}
+            />
+          ) : (
+            <Link
+              href="/login"
+              className="inline-flex items-center gap-2 rounded-md border px-4 py-3 text-sm bg-brand-800 text-white hover:bg-brand-900"
+            >
+              <User size={18} /> Acesse sua conta
+            </Link>
+          )}
+
           <Link
-            href="/login"
-            className="inline-flex items-center gap-2 rounded-md border px-4 py-3 text-sm bg-brand-800 text-white hover:bg-brand-900"
-          >
-            <User size={16} />
-            <span className="hidden sm:inline">Acesse sua conta</span>
-          </Link>
-          <button
-            type="button"
+            href="/favoritos"
             className="inline-flex items-center rounded-md px-3 py-2 text-sm"
             aria-label="Favoritos"
             title="Favoritos"
           >
             <Heart size={22} />
-          </button>
+          </Link>
+
           <Link
             href="/carrinho"
             className="inline-flex items-center rounded-m"
@@ -104,15 +103,9 @@ export function Header() {
       </div>
 
       <div className="container gap-2 pb-2 md:hidden">
-        <form
-          onSubmit={submitSearch}
-          role="search"
-          className="relative flex items-center"
-        >
+        <form role="search" className="relative flex items-center">
           <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && submitSearch()}
+            name="q"
             placeholder="Buscar produtos…"
             className="w-full rounded-full border bg-white px-4 py-2.5 pr-10 text-sm outline-none ring-1 ring-transparent placeholder:text-slate-400 focus:border-brand focus:ring-brand/40"
             aria-label="Buscar"
@@ -123,17 +116,15 @@ export function Header() {
             aria-hidden
           />
         </form>
+
         <button
           type="button"
-          onClick={() => {
-            const c = prompt("Informe seu CEP:");
-            if (c) setCep(c);
-          }}
+          data-cep
           className="mt-2 inline-flex items-center gap-2 rounded-md py-2 text-sm hover:bg-slate-50"
           aria-label="Informe seu CEP para calcular frete e prazo"
         >
           <MapPin size={16} />
-          <span>{cep ? `CEP: ${cep}` : "Informe seu CEP"}</span>
+          <span>Informe seu CEP</span>
         </button>
       </div>
 
@@ -153,14 +144,13 @@ export function Header() {
             className="flex w-full items-center gap-4 overflow-x-auto whitespace-nowrap text-sm"
           >
             {CATEGORIES.slice(1).map((cat) => (
-              <button
+              <Link
                 key={cat}
-                type="button"
+                href={`/categoria/${encodeURIComponent(cat.toLowerCase())}`}
                 className="shrink-0 rounded-md px-2 py-1 text-slate-700 hover:bg-slate-100"
-                // TODO: navegar para rota/categoria
               >
                 {cat}
-              </button>
+              </Link>
             ))}
           </nav>
         </div>
