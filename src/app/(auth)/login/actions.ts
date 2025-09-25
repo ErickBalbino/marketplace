@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { TOKEN_COOKIE, USER_COOKIE } from "@/lib/auth";
 
 const API = process.env.API_BASE_URL ?? "http://localhost:3001";
 
@@ -11,6 +12,7 @@ export async function authenticate(
 ) {
   const email = String(formData.get("email") || "");
   const password = String(formData.get("password") || "");
+  const next = String(formData.get("next") || "");
 
   const res = await fetch(`${API}/auth/login`, {
     method: "POST",
@@ -20,14 +22,30 @@ export async function authenticate(
   });
 
   if (!res.ok) {
-    await res.json().catch(() => ({}));
-    return { error: "Email e/ou senha são invalidos, tente novamente!" };
+    const data = await res.json().catch(() => ({}));
+    return {
+      error:
+        data?.message == "Invalid credentials"
+          ? "Email e/ou senha são inválidos"
+          : data?.message,
+    };
   }
 
   const data = await res.json();
-  const token = data?.access_token || data?.token;
-  if (!token) return { error: "Token não recebido." };
-  (await cookies()).set("auth_token", token, {
+  const token = data?.accessToken;
+  const user = data?.user;
+
+  if (!token || !user) return { error: "Credenciais inválidas." };
+
+  const jar = await cookies();
+  jar.set(TOKEN_COOKIE, token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7,
+  });
+  jar.set(USER_COOKIE, JSON.stringify(user), {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
@@ -35,5 +53,6 @@ export async function authenticate(
     maxAge: 60 * 60 * 24 * 7,
   });
 
-  redirect("/");
+  const dest = next && next.startsWith("/") ? next : "/";
+  redirect(dest);
 }

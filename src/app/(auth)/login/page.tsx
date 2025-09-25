@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-
 import { authenticate } from "./actions";
-
 import { ShoppingBag, ShieldCheck, Truck, Star } from "lucide-react";
-
 import { LoginForm } from "./_components/LoginForm";
 
 export const metadata: Metadata = { title: "Entrar — Marketplace" };
 
-export default function LoginPage() {
+type Props = { searchParams: Promise<{ next?: string }> };
+
+export default async function LoginPage({ searchParams }: Props) {
+  const params = await searchParams;
+  const next = params?.next ?? "";
+
   return (
     <div className="mx-auto grid min-h-[80dvh] w-full max-w-6xl grid-cols-1 overflow-hidden rounded-3xl border border-gray-300 bg-white shadow-card lg:min-h-[80dvh] lg:grid-cols-2">
       <section aria-hidden className="relative hidden lg:block">
@@ -20,13 +22,11 @@ export default function LoginPage() {
           alt=""
           fill
           priority
-          quality={90}
           sizes="(min-width: 1024px) 50vw, 0vw"
           className="object-cover"
         />
 
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-transparent" />
-
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(100%_60%_at_0%_50%,rgba(0,0,0,0.28),transparent_60%),radial-gradient(100%_60%_at_100%_50%,rgba(0,0,0,0.28),transparent_60%)]" />
 
         <div className="absolute inset-x-0 bottom-0 p-8 text-white">
@@ -35,22 +35,21 @@ export default function LoginPage() {
             Entre para acompanhar pedidos, salvar favoritos e aproveitar ofertas
             de marcas parceiras.
           </p>
-
           <ul className="mt-6 grid grid-cols-2 gap-3 text-sm">
             <li className="flex items-center gap-2">
-              <ShieldCheck size={18} className="text-accent-600" aria-hidden />
+              <ShieldCheck size={18} className="text-accent-600" />
               Pagamento seguro
             </li>
             <li className="flex items-center gap-2">
-              <Truck size={18} className="text-accent-600" aria-hidden />
+              <Truck size={18} className="text-accent-600" />
               Entrega rápida
             </li>
             <li className="flex items-center gap-2">
-              <ShoppingBag size={17} className="text-accent-600" aria-hidden />
+              <ShoppingBag size={17} className="text-accent-600" />
               Marcas oficiais
             </li>
             <li className="flex items-center gap-2">
-              <Star size={18} className="text-accent-600" aria-hidden />
+              <Star size={18} className="text-accent-600" />
               Avaliações reais
             </li>
           </ul>
@@ -70,7 +69,7 @@ export default function LoginPage() {
             </p>
           </header>
 
-          <LoginForm action={authenticate} />
+          <LoginForm action={authenticate} next={next} />
         </div>
       </section>
     </div>

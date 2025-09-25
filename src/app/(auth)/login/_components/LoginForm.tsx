@@ -10,9 +10,10 @@ import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 type State = { error?: string };
 type Props = {
   action: (prevState: State, formData: FormData) => Promise<State>;
+  next?: string;
 };
 
-export function LoginForm({ action }: Props) {
+export function LoginForm({ action, next = "" }: Props) {
   const [state, formAction, pending] = useActionState<State, FormData>(
     action,
     {},
@@ -54,6 +55,8 @@ export function LoginForm({ action }: Props) {
       )}
 
       <form className="space-y-3" noValidate onSubmit={handleValidateAndSubmit}>
+        <input type="hidden" name="next" value={next} />
+
         <div>
           <label htmlFor="email" className="block text-sm font-medium">
             E-mail
@@ -73,11 +76,7 @@ export function LoginForm({ action }: Props) {
               autoCapitalize="none"
               placeholder="voce@email.com"
               disabled={pending}
-              className={`w-full rounded-xl border bg-white pl-10 pr-3 py-3 outline-none placeholder:text-slate-400 focus:ring-1 focus:ring-brand/40 focus:border-brand-700 ${
-                errors.email
-                  ? "border-error-300 focus:border-error-400 focus:ring-error-200"
-                  : ""
-              }`}
+              className={`w-full rounded-xl border bg-white pl-10 pr-3 py-3 outline-none placeholder:text-slate-400 focus:ring-1 focus:ring-brand/40 focus:border-brand-700 ${errors.email ? "border-error-300 focus:border-error-400 focus:ring-error-200" : ""}`}
               aria-invalid={!!errors.email}
               aria-describedby={errors.email ? "email-error" : undefined}
               {...register("email")}
@@ -111,11 +110,7 @@ export function LoginForm({ action }: Props) {
               spellCheck={false}
               placeholder="------------"
               disabled={pending}
-              className={`w-full rounded-xl border bg-white pl-10 pr-10 py-3 outline-none placeholder:text-slate-400 focus:border-brand focus:ring-1 focus:ring-brand/40 focus:border-brand-700 ${
-                errors.password
-                  ? "border-error-300 focus:border-error-400 focus:ring-error-200"
-                  : ""
-              }`}
+              className={`w-full rounded-xl border bg-white pl-10 pr-10 py-3 outline-none placeholder:text-slate-400 focus:border-brand focus:ring-1 focus:ring-brand/40 focus:border-brand-700 ${errors.password ? "border-error-300 focus:border-error-400 focus:ring-error-200" : ""}`}
               aria-invalid={!!errors.password}
               aria-describedby={errors.password ? "password-error" : undefined}
               {...register("password")}
@@ -172,6 +167,7 @@ export function LoginForm({ action }: Props) {
           aria-label="Entrar com Google"
           className="inline-flex w-full items-center justify-center gap-3 rounded-xl border px-4 py-3 text-sm font-medium hover:bg-slate-50"
         >
+          {/* Google icon inline */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 48 48"
