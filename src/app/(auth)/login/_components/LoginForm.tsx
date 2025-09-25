@@ -34,12 +34,12 @@ export function LoginForm({ action, next = "" }: Props) {
     e.preventDefault();
     const form = e.currentTarget as HTMLFormElement;
 
-    const ok = await trigger(undefined, { shouldFocus: true });
-    if (!ok) return;
+    const resp = await trigger(undefined, { shouldFocus: true });
+    if (!resp) return;
 
-    const fd = new FormData(form);
+    const data = new FormData(form);
     startTransition(() => {
-      formAction(fd);
+      formAction(data);
     });
   }
 
@@ -108,7 +108,7 @@ export function LoginForm({ action, next = "" }: Props) {
               type={show ? "text" : "password"}
               autoComplete="current-password"
               spellCheck={false}
-              placeholder="------------"
+              placeholder="••••••"
               disabled={pending}
               className={`w-full rounded-xl border bg-white pl-10 pr-10 py-3 outline-none placeholder:text-slate-400 focus:border-brand focus:ring-1 focus:ring-brand/40 focus:border-brand-700 ${errors.password ? "border-error-300 focus:border-error-400 focus:ring-error-200" : ""}`}
               aria-invalid={!!errors.password}
@@ -118,7 +118,7 @@ export function LoginForm({ action, next = "" }: Props) {
             <button
               type="button"
               onClick={() => setShow((s) => !s)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-slate-500 hover:bg-slate-100"
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-slate-500 hover:bg-slate-100 cursor-pointer"
               aria-label={show ? "Ocultar senha" : "Mostrar senha"}
             >
               {show ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -151,7 +151,7 @@ export function LoginForm({ action, next = "" }: Props) {
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex w-full items-center justify-center rounded-xl px-4 py-3 text font-medium text-white transition bg-brand-800 hover:bg-brand-900 disabled:opacity-60"
+          className="inline-flex w-full items-center justify-center rounded-xl px-4 py-3 text font-medium text-white transition bg-brand-800 hover:bg-brand-900 disabled:opacity-60 cursor-pointer"
         >
           {pending ? "Entrando…" : "Entrar"}
         </button>
@@ -165,9 +165,8 @@ export function LoginForm({ action, next = "" }: Props) {
         <button
           type="button"
           aria-label="Entrar com Google"
-          className="inline-flex w-full items-center justify-center gap-3 rounded-xl border px-4 py-3 text-sm font-medium hover:bg-slate-50"
+          className="inline-flex w-full items-center justify-center gap-3 rounded-xl border px-4 py-3 text-sm font-medium hover:bg-slate-50 cursor-pointer"
         >
-          {/* Google icon inline */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 48 48"
