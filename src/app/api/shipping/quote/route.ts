@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import type { ShippingQuoteRequest } from "@/types/Shipping";
+import type { ShippingQuoteRequest } from "@/types/shipping";
 import { quoteShipping } from "@/services/shipping";
 
 export async function POST(req: Request) {

@@ -59,7 +59,7 @@ export function UserMenu({ name, email, avatarUrl }: Props) {
   const handlePointerLeave = () => {
     timerRef.current = setTimeout(() => {
       setOpen(false);
-    }, 300); // Delay para fechar
+    }, 300);
   };
 
   useEffect(() => {
@@ -71,17 +71,13 @@ export function UserMenu({ name, email, avatarUrl }: Props) {
   }, []);
 
   return (
-    // 1. A prop `onOpenChange` é a chave para a integração correta.
     <DropdownMenu open={open} onOpenChange={handleOpenChange}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
           className="h-10 w-10 rounded-full p-0 cursor-pointer border"
-          // 2. Usamos onPointerEnter para iniciar o hover.
           onPointerEnter={handlePointerEnter}
           onPointerLeave={handlePointerLeave}
-          // 3. O onClick manual foi REMOVIDO para evitar conflitos.
-          // O Trigger já lida com o clique e chamará o onOpenChange.
           aria-label="Abrir menu do usuário"
         >
           <Avatar className="h-10 w-10">
@@ -116,8 +112,6 @@ export function UserMenu({ name, email, avatarUrl }: Props) {
           </Link>
         </DropdownMenuItem>
 
-        {/* ... O restante dos seus DropdownMenuItems ... */}
-
         <DropdownMenuItem asChild>
           <Link
             href="/conta/pedidos"
@@ -147,17 +141,17 @@ export function UserMenu({ name, email, avatarUrl }: Props) {
 
         <DropdownMenuSeparator />
 
-        <form action={signOut}>
-          <DropdownMenuItem asChild>
-            <button
-              type="submit"
-              className="flex w-full items-center gap-2 text-red-600"
-            >
-              <LogOut size={16} />
-              Sair
-            </button>
-          </DropdownMenuItem>
-        </form>
+        <DropdownMenuItem asChild>
+          <button
+            className="flex w-full items-center gap-2 text-red-600"
+            onClick={async () => {
+              await signOut();
+            }}
+          >
+            <LogOut size={16} />
+            Sair
+          </button>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -1,4 +1,4 @@
-import { LocationData } from "@/types/Location";
+import { LocationData } from "@/types/location";
 import { formatAddress } from "@/utils/formatAddress";
 
 export function maskCep(value: string): string {

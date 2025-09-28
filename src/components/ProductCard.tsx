@@ -1,6 +1,11 @@
-import { Product } from "@/types/Product";
+// src/components/ProductCard.tsx
+"use client";
+
+import { Product } from "@/types/product";
 import { SmartImage } from "./SmartImage";
 import { HeartIcon, ShoppingCart } from "lucide-react";
+import { addToCart } from "@/services/cart/client";
+import { useTransition } from "react";
 
 function brl(n: number) {
   try {
@@ -22,6 +27,18 @@ export function ProductCard({
 }) {
   const title = product.title ?? product.name ?? "Produto";
   const price = brl(product.price);
+  const [isPending, startTransition] = useTransition();
+
+  const onAdd = () =>
+    startTransition(async () => {
+      try {
+        await addToCart(product.id, 1);
+        alert(`Adicionado: ${title}`);
+      } catch (e) {
+        console.error(e);
+        alert("Falha ao adicionar ao carrinho");
+      }
+    });
 
   if (variant === "list") {
     return (
@@ -50,15 +67,20 @@ export function ProductCard({
             <button
               type="button"
               className="rounded-lg border border-gray-300 p-2 hover:bg-gray-50"
+              aria-label="Favoritar"
             >
               <HeartIcon size={18} color="red" />
             </button>
             <button
               type="button"
-              className="rounded-lg bg-brand-800 px-3 py-2 text-sm font-medium text-white hover:bg-brand-900"
+              onClick={onAdd}
+              disabled={isPending}
+              aria-busy={isPending}
+              className="flex items-center rounded-lg bg-brand-800 px-3 py-2.5 text-sm font-medium text-white hover:bg-brand-900 disabled:opacity-60"
               aria-label={`Adicionar ${title} ao carrinho`}
             >
-              Adicionar
+              <ShoppingCart size={18} className="mr-2" />
+              {isPending ? "Adicionando..." : "Adicionar"}
             </button>
           </div>
         </div>
@@ -88,7 +110,8 @@ export function ProductCard({
 
           <button
             type="button"
-            className="rounded-lg p-2 hover:bg-gray-100 cursor-pointer max-sm:self-end"
+            className="rounded-lg p-2 hover:bg-gray-100 max-sm:self-end"
+            aria-label="Favoritar"
           >
             <HeartIcon size={18} color="red" />
           </button>
@@ -111,10 +134,14 @@ export function ProductCard({
 
           <button
             type="button"
-            className="flex items-center rounded-lg bg-brand-800 px-3 py-2.5 text-sm font-medium text-white hover:bg-brand-900 cursor-pointer"
+            onClick={onAdd}
+            disabled={isPending}
+            aria-busy={isPending}
+            className="flex items-center rounded-lg bg-brand-800 px-3 py-2.5 text-sm font-medium text-white hover:bg-brand-900 disabled:opacity-60"
             aria-label={`Adicionar ${title} ao carrinho`}
           >
-            <ShoppingCart size={18} className="mr-2" /> Adicionar
+            <ShoppingCart size={18} className="mr-2" />
+            {isPending ? "Adicionando..." : "Adicionar"}
           </button>
         </div>
       </div>

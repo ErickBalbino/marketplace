@@ -1,6 +1,6 @@
 import "server-only";
 import { cookies } from "next/headers";
-import type { AuthUser } from "@/types/Auth";
+import type { AuthUser } from "@/types/auth";
 
 export const TOKEN_COOKIE = "auth_token";
 export const USER_COOKIE = "auth_user";

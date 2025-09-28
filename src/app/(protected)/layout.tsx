@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
+import Header from "@/components/header/Header";
 
 export default async function ProtectedLayout({
   children,
@@ -8,5 +9,10 @@ export default async function ProtectedLayout({
 }) {
   const session = await getSession();
   if (!session) redirect("/login");
-  return <>{children}</>;
+  return (
+    <main>
+      <Header />
+      {children}
+    </main>
+  );
 }

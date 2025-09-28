@@ -5,7 +5,7 @@ import { ProductGallery } from "../_components/ProductGallery";
 import { BuyBox } from "../_components/BuyBox";
 import { Specifications } from "../_components/Specifications";
 import { Reviews } from "../_components/Reviews";
-import { Product } from "@/types/Product";
+import { Product } from "@/types/product";
 import { cookies } from "next/headers";
 import { ShipContainer } from "../_components/ShipContainer";
 import { Metadata } from "next";
@@ -31,9 +31,10 @@ function currency(v: number) {
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: { id?: string };
+  searchParams: Promise<{ id?: string }>;
 }): Promise<Metadata> {
-  const id = searchParams?.id;
+  const resolvedSearchParams = await searchParams;
+  const id = resolvedSearchParams?.id;
 
   if (!id) {
     return {
@@ -101,7 +102,7 @@ export async function generateMetadata({
 export default async function ProductPage({
   searchParams,
 }: {
-  searchParams: { id?: string };
+  searchParams: Promise<{ id?: string }>;
 }) {
   const jar = await cookies();
   const shipToRaw = jar.get("ship_to")?.value ?? "";
@@ -111,7 +112,8 @@ export default async function ProductPage({
     shipTo = shipToRaw ? JSON.parse(shipToRaw) : null;
   } catch {}
 
-  const id = searchParams?.id;
+  const resolvedSearchParams = await searchParams;
+  const id = resolvedSearchParams?.id;
   if (!id) return notFound();
 
   const res = await api(`/products/${encodeURIComponent(id)}`);
@@ -188,7 +190,11 @@ export default async function ProductPage({
         </section>
 
         <aside className="lg:sticky lg:top-24 lg:h-fit">
-          <BuyBox priceLabel={price} productName={product.name || ""} />
+          <BuyBox
+            priceLabel={price}
+            productName={product.name || ""}
+            productId={product.id}
+          />
         </aside>
       </div>
 

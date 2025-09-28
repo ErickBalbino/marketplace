@@ -15,6 +15,7 @@ export async function api(path: string, opts: Opts = {}) {
   if (isServer) {
     const { cookies } = await import("next/headers");
     const token = (await cookies()).get("auth_token")?.value;
+
     if (token) headers.Authorization = `Bearer ${token}`;
   }
 

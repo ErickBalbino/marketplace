@@ -5,11 +5,11 @@ import type {
   ShippingQuoteResponse,
   UF,
   Zone,
-} from "@/types/Shipping";
+} from "@/types/shipping";
 import { lookupCep, type CepInfo } from "@/lib/cep";
 
 const STORE_ORIGIN_CEP = process.env.STORE_ORIGIN_CEP ?? "01001000";
-const FREE_MIN = Number(process.env.FREE_SHIPPING_MIN ?? 350);
+const FREE_MIN = Number(process.env.FREE_SHIPPING_MIN ?? 1550);
 
 const MACRO: Record<Exclude<MacroRegion, "Outros">, readonly UF[]> = {
   Norte: ["AC", "AP", "AM", "PA", "RO", "RR", "TO"],

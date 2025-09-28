@@ -17,8 +17,6 @@ export function SmartImage({
   ...rest
 }: Props) {
   const src = resolveImageSrc(raw);
-  console.log("teste");
-  console.log(src);
 
   const isExternalOrDataUrl =
     /^https?:\/\//i.test(src) ||

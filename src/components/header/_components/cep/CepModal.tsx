@@ -19,7 +19,7 @@ import {
 } from "./_utils/functions";
 import { confirmShipTo } from "./actions";
 import { useDebounce } from "@/hooks/useDebounce";
-import { LocationData } from "@/types/Location";
+import { LocationData } from "@/types/location";
 import { ErrorDisplay } from "@/components/layout/error/ErrorDisplay";
 import { Button } from "@/components/ui/button";
 

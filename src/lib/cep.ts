@@ -1,4 +1,4 @@
-import { UF } from "@/types/Shipping";
+import { UF } from "@/types/shipping";
 
 export type CepInfo = {
   cep: string;

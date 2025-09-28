@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { AuthUser } from "@/types/Auth";
+import { AuthUser } from "@/types/auth";
 
 const API = process.env.API_BASE_URL ?? "http://localhost:3001";
 
@@ -25,8 +25,6 @@ export async function registerAction(
     body: JSON.stringify({ name, email, password, phone, cpf }),
     cache: "no-store",
   });
-
-  console.log(res);
 
   if (res.status === 409)
     return {

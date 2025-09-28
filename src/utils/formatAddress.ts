@@ -1,4 +1,4 @@
-import { LocationData } from "@/types/Location";
+import { LocationData } from "@/types/location";
 
 export function formatAddress(location: LocationData): string {
   const parts = [];

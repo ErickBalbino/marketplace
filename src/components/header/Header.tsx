@@ -131,11 +131,10 @@ export default async function Header() {
             ) : (
               <Link
                 href="/login"
-                className="hidden lg:inline-flex items-center gap-2 rounded-xl bg-brand-800 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-900 transition-colors"
+                className="hidden lg:inline-flex items-center justify-center gap-2 rounded-xl bg-brand-800 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-900 transition-colors ml-3 w-[120px]"
               >
                 <User2 size={18} />
-                <span className="hidden xl:inline">Acesse sua conta</span>
-                <span className="xl:hidden">Entrar</span>
+                <span>Entrar</span>
               </Link>
             )}
           </div>

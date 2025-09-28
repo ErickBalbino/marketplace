@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 
 import ProgressLoader from "@/components/ProgressLoader";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,6 +30,8 @@ export default function RootLayout({
     <html suppressHydrationWarning lang="pt-BR">
       <body className={`${inter.variable} ${jetbrains.variable} min-h-dvh `}>
         <ProgressLoader />
+
+        <Toaster position="top-right" richColors duration={1500} />
 
         {children}
       </body>

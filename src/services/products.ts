@@ -1,5 +1,5 @@
 import { api } from "@/lib/api";
-import { Product } from "@/types/Product";
+import { Product } from "@/types/product";
 
 export type ProductsPage = {
   page: number;
@@ -22,10 +22,7 @@ export async function fetchProducts(opts: {
   }
 
   const res = await api(`/products?${params.toString()}`, {
-    cache: "force-cache",
-    next: {
-      revalidate: 30,
-    },
+    cache: "no-cache",
   });
 
   if (!res.ok) throw new Error("Falha ao buscar produtos");

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
-import type { ShippingQuoteResponse } from "@/types/Shipping";
+import type { ShippingQuoteResponse } from "@/types/shipping";
 import { maskCep } from "@/components/header/_components/cep/_utils/functions";
 
 type ShipTo = { cep: string; label?: string } | null;

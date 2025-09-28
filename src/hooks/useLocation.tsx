@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { LocationData } from "@/types/Location";
+import { LocationData } from "@/types/location";
 
 export function useLocation() {
   const [loading, setLoading] = useState(false);
