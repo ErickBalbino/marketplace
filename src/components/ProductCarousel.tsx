@@ -1,7 +1,8 @@
 "use client";
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Product, ProductCard } from "./ProductCard";
+import { ProductCard } from "./ProductCard";
+import { Product } from "@/types/Product";
 
 export function ProductCarousel({
   title,

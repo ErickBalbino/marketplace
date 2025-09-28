@@ -1,8 +1,7 @@
-// src/components/header/UserMenu.tsx
 "use client";
 
 import Link from "next/link";
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   Heart,
   LogOut,
@@ -39,28 +38,50 @@ function initials(nameOrEmail: string) {
 
 export function UserMenu({ name, email, avatarUrl }: Props) {
   const [open, setOpen] = useState(false);
-  const closeTimer = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const cancelClose = () => {
-    if (closeTimer.current) {
-      clearTimeout(closeTimer.current);
-      closeTimer.current = null;
+  const handleOpenChange = (newOpen: boolean) => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
     }
+    setOpen(newOpen);
   };
 
-  const scheduleClose = useCallback(() => {
-    cancelClose();
-    closeTimer.current = setTimeout(() => setOpen(false), 120);
+  const handlePointerEnter = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+    setOpen(true);
+  };
+
+  const handlePointerLeave = () => {
+    timerRef.current = setTimeout(() => {
+      setOpen(false);
+    }, 300); // Delay para fechar
+  };
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
   }, []);
 
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
+    // 1. A prop `onOpenChange` é a chave para a integração correta.
+    <DropdownMenu open={open} onOpenChange={handleOpenChange}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="h-10 w-10 rounded-full p-0"
-          onMouseEnter={() => setOpen(true)}
-          onMouseLeave={scheduleClose}
+          className="h-10 w-10 rounded-full p-0 cursor-pointer border"
+          // 2. Usamos onPointerEnter para iniciar o hover.
+          onPointerEnter={handlePointerEnter}
+          onPointerLeave={handlePointerLeave}
+          // 3. O onClick manual foi REMOVIDO para evitar conflitos.
+          // O Trigger já lida com o clique e chamará o onOpenChange.
           aria-label="Abrir menu do usuário"
         >
           <Avatar className="h-10 w-10">
@@ -77,14 +98,13 @@ export function UserMenu({ name, email, avatarUrl }: Props) {
 
       <DropdownMenuContent
         align="end"
-        sideOffset={8}
+        sideOffset={2}
         className="w-64 rounded-xl"
-        onMouseEnter={cancelClose}
-        onMouseLeave={scheduleClose}
+        onPointerEnter={handlePointerEnter}
+        onPointerLeave={handlePointerLeave}
       >
-        <DropdownMenuLabel className="flex flex-col">
-          <span className="truncate font-medium">{name}</span>
-          <span className="truncate text-xs text-slate-500">{email}</span>
+        <DropdownMenuLabel>
+          <span className="truncate text-lg">Olá, {name.split(" ")[0]}</span>
         </DropdownMenuLabel>
 
         <DropdownMenuSeparator />
@@ -95,6 +115,8 @@ export function UserMenu({ name, email, avatarUrl }: Props) {
             Meu perfil
           </Link>
         </DropdownMenuItem>
+
+        {/* ... O restante dos seus DropdownMenuItems ... */}
 
         <DropdownMenuItem asChild>
           <Link

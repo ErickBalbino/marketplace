@@ -36,7 +36,7 @@ export default async function Header() {
   } catch {}
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
+    <header className="sticky top-0 z-50   bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
       <div className="container flex items-center py-3 lg:py-4">
         <MobileSidebarTrigger user={user} categories={CATEGORIES} />
 
@@ -49,9 +49,9 @@ export default async function Header() {
             alt="Logo"
             src="/logo.png"
             priority
-            width={150}
-            height={65}
-            className="w-[150px] h-[52px] lg:w-[150px] lg:h-[65px]"
+            width={170}
+            height={60}
+            className="w-[150px] h-[52px] lg:w-[170px] lg:h-[60px]"
           />
         </Link>
 
@@ -100,7 +100,7 @@ export default async function Header() {
             />
           </div>
 
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center space-x-1 mr-3 lg:mr-0">
             <Link
               href="/favoritos"
               className="hidden lg:inline-flex items-center rounded-md p-2 hover:bg-slate-100 transition-all"
@@ -165,7 +165,7 @@ export default async function Header() {
           <div className="hidden lg:flex items-center gap-3 w-full">
             <button
               type="button"
-              className="inline-flex items-center gap-2 rounded-xl border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50 transition-colors"
+              className="inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm hover:bg-slate-50 transition-colors"
               aria-label="Abrir lista de departamentos"
             >
               <Menu size={20} />
