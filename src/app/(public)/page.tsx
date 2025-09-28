@@ -2,8 +2,15 @@ import Link from "next/link";
 import { LayoutGrid, Rows3 } from "lucide-react";
 import { fetchProducts } from "@/services/products";
 import { ProductCard } from "@/components/ProductCard";
+import { Metadata } from "next";
 
 type View = "grid4" | "grid2" | "list";
+
+export const metadata: Metadata = {
+  title: "AllMarket",
+  description:
+    "Encontre os melhores produtos e ofertas na sua região aqui no AllMarket",
+};
 
 function gridClasses(view: View) {
   if (view === "grid2")
