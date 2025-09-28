@@ -1,6 +1,8 @@
+// src/components/header/UserMenu.tsx
 "use client";
 
 import Link from "next/link";
+import { useCallback, useRef, useState } from "react";
 import {
   Heart,
   LogOut,
@@ -18,8 +20,8 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
-import { signOut } from "./actions";
+import { Button } from "@/components/ui/button";
+import { signOut } from "../actions";
 
 type Props = {
   name: string;
@@ -35,20 +37,50 @@ function initials(nameOrEmail: string) {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-export function UserMenu({ name, email }: Props) {
+export function UserMenu({ name, email, avatarUrl }: Props) {
+  const [open, setOpen] = useState(false);
+  const closeTimer = useRef<NodeJS.Timeout | null>(null);
+
+  const cancelClose = () => {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+  };
+
+  const scheduleClose = useCallback(() => {
+    cancelClose();
+    closeTimer.current = setTimeout(() => setOpen(false), 120);
+  }, []);
+
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Avatar className="h-9 w-9">
-          <AvatarImage src={undefined} alt={name} />
-          <AvatarFallback>{initials(name || email)}</AvatarFallback>
-        </Avatar>
+        <Button
+          variant="ghost"
+          className="h-10 w-10 rounded-full p-0"
+          onMouseEnter={() => setOpen(true)}
+          onMouseLeave={scheduleClose}
+          aria-label="Abrir menu do usuário"
+        >
+          <Avatar className="h-10 w-10">
+            {avatarUrl ? (
+              <AvatarImage src={avatarUrl} alt={name} />
+            ) : (
+              <AvatarFallback className="bg-brand-800 text-white">
+                {initials(name || email)}
+              </AvatarFallback>
+            )}
+          </Avatar>
+        </Button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
         align="end"
         sideOffset={8}
         className="w-64 rounded-xl"
+        onMouseEnter={cancelClose}
+        onMouseLeave={scheduleClose}
       >
         <DropdownMenuLabel className="flex flex-col">
           <span className="truncate font-medium">{name}</span>

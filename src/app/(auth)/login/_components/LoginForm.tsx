@@ -168,7 +168,7 @@ export function LoginForm({ action, next = "" }: Props) {
         <button
           type="button"
           aria-label="Entrar com Google"
-          className="inline-flex w-full items-center justify-center gap-3 rounded-xl border px-4 py-3 text-sm font-medium hover:bg-slate-50 cursor-pointer"
+          className="inline-flex w-full items-center justify-center gap-3 rounded-xl border border-slate-400 px-4 py-3 text-sm font-medium hover:bg-slate-50 cursor-pointer"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

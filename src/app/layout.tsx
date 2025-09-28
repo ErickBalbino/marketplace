@@ -27,7 +27,7 @@ export default function RootLayout({
 }) {
   return (
     <html suppressHydrationWarning lang="pt-BR">
-      <body className={`${inter.variable} ${jetbrains.variable} min-h-dvh`}>
+      <body className={`${inter.variable} ${jetbrains.variable} min-h-dvh `}>
         <ProgressLoader />
 
         {children}
