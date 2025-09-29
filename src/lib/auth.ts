@@ -5,13 +5,11 @@ import type { AuthUser } from "@/types/auth";
 export const TOKEN_COOKIE = "auth_token";
 export const USER_COOKIE = "auth_user";
 
-/** Lê o jwt puro (ou null). */
 export async function getToken() {
   const jar = await cookies();
   return jar.get(TOKEN_COOKIE)?.value ?? null;
 }
 
-/** Lê user + token direto dos cookies httpOnly. */
 export async function getSession() {
   const jar = await cookies();
   const token = jar.get(TOKEN_COOKIE)?.value ?? null;
@@ -24,5 +22,20 @@ export async function getSession() {
     return { token, user };
   } catch {
     return null;
+  }
+}
+
+export function getClientAuthStatus(): boolean {
+  if (typeof window === "undefined") return false;
+
+  try {
+    const hasAuthIndicator =
+      document.cookie.includes(TOKEN_COOKIE) ||
+      localStorage.getItem("auth_token") ||
+      sessionStorage.getItem("auth_token");
+
+    return !!hasAuthIndicator;
+  } catch {
+    return false;
   }
 }

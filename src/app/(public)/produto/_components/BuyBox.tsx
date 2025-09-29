@@ -1,32 +1,39 @@
 "use client";
 
 import { ShoppingCart } from "lucide-react";
-import { useState, useTransition } from "react";
-import { addToCart } from "@/services/cart/client";
-import { toast } from "sonner";
+import { useState } from "react";
+import { useAddToCart } from "@/hooks/useAddToCart";
 
 export function BuyBox({
   priceLabel,
   productName,
   productId,
+  productPrice,
+  productImage,
 }: {
   priceLabel: string;
   productName: string;
   productId: string;
+  productPrice: number;
+  productImage?: string;
 }) {
   const [qty, setQty] = useState(1);
-  const [isPending, startTransition] = useTransition();
+  const { handleAddToCart } = useAddToCart();
+  const [isAdding, setIsAdding] = useState(false);
 
-  const onAdd = () => {
-    startTransition(async () => {
-      try {
-        await addToCart(productId, qty);
-        toast.success(`${productName} x${qty} adicionado ao carrinho`);
-      } catch (e) {
-        toast.error("Falha ao adicionar ao carrinho");
-        console.error(e);
-      }
-    });
+  const onAdd = async () => {
+    setIsAdding(true);
+    try {
+      await handleAddToCart(
+        productId,
+        productName,
+        productPrice,
+        productImage,
+        qty,
+      );
+    } finally {
+      setIsAdding(false);
+    }
   };
 
   return (
@@ -72,11 +79,11 @@ export function BuyBox({
           type="button"
           className="rounded-xl bg-brand-800 px-4 py-3 text-sm font-medium text-white hover:bg-brand-900 flex items-center justify-center disabled:opacity-60"
           onClick={onAdd}
-          disabled={isPending}
-          aria-busy={isPending}
+          disabled={isAdding}
+          aria-busy={isAdding}
         >
           <ShoppingCart size={20} className="mr-4" />
-          {isPending ? "Adicionando..." : "Comprar Agora"}
+          {isAdding ? "Adicionando..." : "Comprar Agora"}
         </button>
       </div>
     </div>

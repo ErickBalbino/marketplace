@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { TOKEN_COOKIE, USER_COOKIE } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 const API = process.env.API_BASE_URL ?? "http://localhost:3001";
 
@@ -53,6 +54,9 @@ export async function authenticate(
     maxAge: 60 * 60 * 24 * 7,
   });
 
+  revalidatePath("/", "layout");
+
   const dest = next && next.startsWith("/") ? next : "/";
+
   redirect(dest);
 }

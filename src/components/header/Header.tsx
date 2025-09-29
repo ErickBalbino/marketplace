@@ -1,13 +1,15 @@
 import { cookies } from "next/headers";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, Menu, Heart, ShoppingCart, User2 } from "lucide-react";
+import { Search, Menu, Heart, User2 } from "lucide-react";
 
 import { getSession } from "@/lib/auth";
 import { UserMenu } from "@/components/header/_components/UserMenu";
 import { CepModal } from "@/components/header/_components/cep/CepModal";
 import { MobileSidebarTrigger } from "@/components/layout/MobileSidebar/MobileSidebarTrigger";
 import { maskCep } from "./_components/cep/_utils/functions";
+import { CartIcon } from "./_components/CartIcon";
+import { ScrollWrapper } from "./_components/ScrollHeader";
 
 const CATEGORIES = [
   "Departamentos",
@@ -35,8 +37,8 @@ export default async function Header() {
     shipTo = shipToRaw ? JSON.parse(shipToRaw) : null;
   } catch {}
 
-  return (
-    <header className="sticky top-0 z-50   bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
+  const headerContent = (
+    <div className="bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 h-[140px] shadow-md">
       <div className="container flex items-center py-3 lg:py-4">
         <MobileSidebarTrigger user={user} categories={CATEGORIES} />
 
@@ -109,16 +111,7 @@ export default async function Header() {
               <Heart size={22} />
             </Link>
 
-            <Link
-              href="/carrinho"
-              className="inline-flex items-center rounded-md p-2 hover:bg-slate-100 relative"
-              aria-label="Carrinho de compras"
-            >
-              <ShoppingCart size={22} />
-              <span className="absolute -top-0 -right-0 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                0
-              </span>
-            </Link>
+            <CartIcon />
 
             {user ? (
               <div className="hidden lg:block ml-2">
@@ -188,6 +181,8 @@ export default async function Header() {
           </div>
         </div>
       </div>
-    </header>
+    </div>
   );
+
+  return <ScrollWrapper>{headerContent}</ScrollWrapper>;
 }

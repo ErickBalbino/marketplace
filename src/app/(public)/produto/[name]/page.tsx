@@ -194,6 +194,8 @@ export default async function ProductPage({
             priceLabel={price}
             productName={product.name || ""}
             productId={product.id}
+            productPrice={product.price}
+            productImage={product.imageUrl}
           />
         </aside>
       </div>

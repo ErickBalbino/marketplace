@@ -1,12 +1,8 @@
-import { getServerCart } from "@/services/cart/server";
 import CartView from "./_components/CartView";
 
 export const dynamic = "force-dynamic";
 
 export default async function CartPage() {
-  const cart = await getServerCart();
-  console.log(cart);
-
   return (
     <div className="container py-6">
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
@@ -17,7 +13,7 @@ export default async function CartPage() {
           >
             Meu carrinho
           </h1>
-          <CartView initialCart={cart} />
+          <CartView />
         </section>
         <aside className="lg:sticky lg:top-24 lg:h-fit" />
       </div>

@@ -12,7 +12,8 @@ export default async function ProtectedLayout({
   return (
     <main>
       <Header />
-      {children}
+
+      <div className="mt-32">{children}</div>
     </main>
   );
 }

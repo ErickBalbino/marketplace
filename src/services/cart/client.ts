@@ -1,4 +1,3 @@
-// /services/cart/client.ts (Versão Simplificada)
 import type { Cart } from "@/types/cart";
 
 async function fetchWithAuth(url: string, options: RequestInit = {}) {
@@ -11,12 +10,9 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
   });
 
   if (response.status === 401 || response.status === 403) {
-    const next =
-      typeof window !== "undefined"
-        ? window.location.pathname + window.location.search
-        : "/";
-    window.location.href = `/login?next=${encodeURIComponent(next)}`;
-    throw new Error("auth-required");
+    const error = new Error("Authentication required");
+    error.message = `auth-required: ${response.status}`;
+    throw error;
   }
 
   if (!response.ok) {
@@ -64,7 +60,6 @@ export async function fetchCart(): Promise<Cart> {
   return await response.json();
 }
 
-// Exportar como objeto também para compatibilidade
 export const cartService = {
   addToCart,
   removeFromCart,

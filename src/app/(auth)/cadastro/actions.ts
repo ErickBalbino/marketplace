@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { AuthUser } from "@/types/auth";
+import { revalidatePath } from "next/cache";
 
 const API = process.env.API_BASE_URL ?? "http://localhost:3001";
 
@@ -67,6 +68,8 @@ export async function registerAction(
       path: "/",
       maxAge: 60 * 60 * 24 * 7,
     });
+
+    revalidatePath("/", "layout");
 
     redirect("/");
   }
