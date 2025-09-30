@@ -58,9 +58,6 @@ export function mapCartResponse(json: unknown): Cart {
         ? asOld.total
         : items.reduce((s, i) => s + i.price * i.quantity, 0);
 
-  console.log("inicial");
-  console.log(items);
-
   return { items, total };
 }
 

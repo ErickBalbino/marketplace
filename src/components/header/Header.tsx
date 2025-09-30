@@ -10,6 +10,8 @@ import { MobileSidebarTrigger } from "@/components/layout/MobileSidebar/MobileSi
 import { maskCep } from "./_components/cep/_utils/functions";
 import { CartIcon } from "./_components/CartIcon";
 import { ScrollWrapper } from "./_components/ScrollHeader";
+import HeroContainer from "../home/HeroContainer";
+import { SearchBox } from "../search/SearchBox";
 
 const CATEGORIES = [
   "Departamentos",
@@ -38,8 +40,8 @@ export default async function Header() {
   } catch {}
 
   const headerContent = (
-    <div className="bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 h-[140px] shadow-md">
-      <div className="container flex items-center py-3 lg:py-4">
+    <div className="bg-white h-[120px] shadow-md">
+      <div className="container flex items-center py-3 lg:py-2">
         <MobileSidebarTrigger user={user} categories={CATEGORIES} />
 
         <Link
@@ -51,31 +53,14 @@ export default async function Header() {
             alt="Logo"
             src="/logo.png"
             priority
-            width={170}
-            height={60}
-            className="w-[150px] h-[52px] lg:w-[170px] lg:h-[60px]"
+            width={155}
+            height={55}
+            className="w-[150px] h-[52px] lg:w-[155] lg:h-[55px]"
           />
         </Link>
 
         <div className="hidden lg:flex mx-auto w-full max-w-2xl items-center">
-          <form
-            action="/"
-            role="search"
-            aria-label="Buscar produtos"
-            className="relative w-full"
-          >
-            <input
-              name="q"
-              placeholder="O que você está procurando?"
-              className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-sm outline-none ring-0 placeholder:text-slate-500 focus:border-brand-700 focus:ring-1 focus:ring-brand/30"
-              aria-label="Campo de busca"
-            />
-            <Search
-              size={18}
-              className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-600"
-              aria-hidden
-            />
-          </form>
+          <SearchBox />
         </div>
 
         <div className="flex items-center gap-2 lg:gap-3 ml-auto lg:ml-0">
@@ -135,14 +120,14 @@ export default async function Header() {
       </div>
 
       <div className="border-t">
-        <div className="container flex items-center py-2">
+        <div className="container flex items-center">
           <div className="lg:hidden flex-1 bg-brand-700">
             <CepModal
               label={
                 <span className="flex items-center gap-2 text-sm text-slate-50 lg:text-slate-700">
                   {shipTo ? (
                     <span className="truncate">
-                      Entregar em: {maskCep(shipTo.cep)}
+                      Entregar em {maskCep(shipTo.cep)}
                     </span>
                   ) : (
                     <span className="text-slate-50">
@@ -154,7 +139,7 @@ export default async function Header() {
             />
           </div>
 
-          <div className="hidden lg:flex items-center gap-3 w-full">
+          <div className="hidden lg:flex items-center gap-3 w-full lg:py-2">
             <button
               type="button"
               className="inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm hover:bg-slate-50 transition-colors"
@@ -184,5 +169,11 @@ export default async function Header() {
     </div>
   );
 
-  return <ScrollWrapper>{headerContent}</ScrollWrapper>;
+  return (
+    <div>
+      <HeroContainer />
+
+      <ScrollWrapper>{headerContent}</ScrollWrapper>
+    </div>
+  );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Heart,
   LogOut,
@@ -38,46 +38,17 @@ function initials(nameOrEmail: string) {
 
 export function UserMenu({ name, email, avatarUrl }: Props) {
   const [open, setOpen] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleOpenChange = (newOpen: boolean) => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
     setOpen(newOpen);
   };
-
-  const handlePointerEnter = () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
-    setOpen(true);
-  };
-
-  const handlePointerLeave = () => {
-    timerRef.current = setTimeout(() => {
-      setOpen(false);
-    }, 300);
-  };
-
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-    };
-  }, []);
 
   return (
     <DropdownMenu open={open} onOpenChange={handleOpenChange}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="h-10 w-10 rounded-full p-0 cursor-pointer border"
-          onPointerEnter={handlePointerEnter}
-          onPointerLeave={handlePointerLeave}
+          className="h-10 w-10 rounded-full p-5 cursor-pointer border"
           aria-label="Abrir menu do usuário"
         >
           <Avatar className="h-10 w-10">
@@ -96,8 +67,6 @@ export function UserMenu({ name, email, avatarUrl }: Props) {
         align="end"
         sideOffset={2}
         className="w-64 rounded-xl"
-        onPointerEnter={handlePointerEnter}
-        onPointerLeave={handlePointerLeave}
       >
         <DropdownMenuLabel>
           <span className="truncate text-lg">Olá, {name.split(" ")[0]}</span>

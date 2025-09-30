@@ -7,6 +7,14 @@ const nextConfig: NextConfig = {
       { protocol: "http", hostname: "localhost", port: "3001" },
     ],
   },
+  async headers() {
+    return [
+      {
+        source: "/uploads/:path*",
+        headers: [{ key: "Access-Control-Allow-Origin", value: "*" }],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

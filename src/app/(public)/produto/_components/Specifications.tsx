@@ -1,6 +1,6 @@
 export function Specifications() {
   return (
-    <section className="rounded-2xl border p-5">
+    <section>
       <h2 className="text-xl font-semibold">Descrição do produto</h2>
 
       <div className="mt-3 space-y-3 leading-relaxed text-slate-700">

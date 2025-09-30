@@ -247,7 +247,7 @@ export function CepModal({ label }: CepModalProps) {
               onClick={handleUseLocation}
               disabled={isLoadingGeo || isLoadingCep}
               variant="outline"
-              className="w-full justify-start h-12"
+              className="w-full h-12 flex justify-center cursor-pointer"
             >
               <LocateFixed
                 size={18}
@@ -317,7 +317,8 @@ export function CepModal({ label }: CepModalProps) {
                 type="button"
                 onClick={handleConfirm}
                 disabled={isConfirmDisabled}
-                className="rounded-2xl bg-brand-800 px-5 py-3 text-sm font-medium text-white hover:bg-brand-900 disabled:opacity-60"
+                className="rounded-2xl bg-brand-800 px-5 text-sm font-medium text-white hover:bg-brand-900 disabled:opacity-60 cursor-pointer"
+                aria-label="Confirmar CEP"
               >
                 {isConfirming ? "Confirmando…" : "Confirmar"}
               </Button>

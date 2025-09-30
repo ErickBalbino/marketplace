@@ -22,7 +22,6 @@ export async function GET() {
     const json = await res.json();
     const cart = mapCartResponse(json);
 
-    // Garantir que o carrinho sempre tenha uma estrutura válida
     return NextResponse.json({
       items: cart.items || [],
       total: cart.total || 0,

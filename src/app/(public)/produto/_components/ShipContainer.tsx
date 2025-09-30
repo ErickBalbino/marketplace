@@ -69,12 +69,12 @@ export function ShipContainer({ shipTo, item }: Props) {
   };
 
   return (
-    <div className="rounded-2xl border p-5">
+    <div className="rounded-2xl border p-3 mt-5 bg-brand-50">
       <h3 className="text-lg font-semibold">Calcule frete e prazo</h3>
 
       {shipTo?.label ? (
         <p className="mt-1 text-sm text-slate-600">
-          Entrega para <span className="font-medium">{shipTo.label}</span>
+          Entrega para <span className="font-semibold">{shipTo.label}</span>
         </p>
       ) : (
         <p className="mt-1 text-sm text-slate-600">
@@ -82,20 +82,20 @@ export function ShipContainer({ shipTo, item }: Props) {
         </p>
       )}
 
-      <div className="mt-4 flex gap-2">
+      <div className="mt-4 flex flex-col lg:flex-row w-full justify-between gap-2">
         <input
           value={cep}
           onChange={(e) => setCep(maskCep(e.target.value))}
           placeholder="00000-000"
           inputMode="numeric"
-          className="w-full rounded-xl border px-4 py-2.5 text-sm outline-none ring-0 placeholder:text-slate-400 focus:border-brand-700 focus:ring-2 focus:ring-brand/30 disabled:opacity-60"
+          className="lg:w-[70%] rounded-xl border px-4 py-3 text-sm outline-none ring-0 bg-white placeholder:text-slate-400 focus:border-brand-700 focus:ring-1 focus:ring-brand/30 disabled:opacity-60"
           disabled={isPending}
         />
         <button
           type="button"
           onClick={onConsultar}
           disabled={isPending || !hasCep}
-          className="rounded-xl bg-brand-800 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-900 disabled:opacity-60"
+          className="rounded-xl bg-brand-800 px-4 py-3 text-sm font-medium text-white hover:bg-brand-900 disabled:opacity-60 lg:w-[20%]"
         >
           {isPending ? "Consultando…" : "Consultar"}
         </button>

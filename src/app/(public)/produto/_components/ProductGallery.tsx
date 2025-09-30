@@ -4,7 +4,7 @@ import { SmartImage } from "@/components/SmartImage";
 
 export function ProductGallery({ cover }: { cover: string }) {
   return (
-    <div className="relative aspect-square overflow-hidden rounded-2xl border h-[90%]">
+    <div className="relative aspect-square overflow-hidden rounded-2xl border h-[95%]">
       <SmartImage
         src={cover}
         alt="Imagem do produto"

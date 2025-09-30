@@ -6,4 +6,6 @@ export interface Product {
   price: number;
   imageUrl?: string;
   stockStatus?: "in" | "low" | "out";
+  createdAt?: string;
+  updatedAt?: string;
 }

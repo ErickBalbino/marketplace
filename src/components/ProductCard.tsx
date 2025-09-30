@@ -5,17 +5,11 @@ import { SmartImage } from "./SmartImage";
 import { HeartIcon, ShoppingCart } from "lucide-react";
 import { useAddToCart } from "@/hooks/useAddToCart";
 import { useState } from "react";
-
-function brl(n: number) {
-  try {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(n);
-  } catch {
-    return `R$ ${Number(n || 0).toFixed(2)}`;
-  }
-}
+import { FavoriteButton } from "./favorites/FavoriteButton";
+import { brl } from "@/utils/formatCurrency";
+import { reviews } from "@/data/reviews";
+import { RatingStars } from "@/app/(public)/produto/_components/RatingStars";
+import Link from "next/link";
 
 export function ProductCard({
   product,
@@ -28,6 +22,12 @@ export function ProductCard({
   const price = brl(product.price);
   const { handleAddToCart } = useAddToCart();
   const [isAdding, setIsAdding] = useState(false);
+
+  const totalReviews = reviews.length;
+  const avgReviews =
+    totalReviews > 0
+      ? reviews.reduce((s, r) => s + r.rating, 0) / totalReviews
+      : 0;
 
   const onAdd = async () => {
     setIsAdding(true);
@@ -60,6 +60,11 @@ export function ProductCard({
 
           <div className="min-w-0 flex-1">
             <h3 className="line-clamp-2 font-medium">{title}</h3>
+
+            <div>
+              <RatingStars value={avgReviews} size={16} />
+            </div>
+
             <p className="mt-1 line-clamp-2 text-sm text-slate-500">
               {product.description || "—"}
             </p>
@@ -94,48 +99,71 @@ export function ProductCard({
   }
 
   return (
-    <article className="min-w-[220px] snap-start rounded-xl border shadow-card transition hover:-translate-y-0.5 hover:shadow max-sm:w-[170px] max-sm:min-w-0 max-sm:mb-5">
+    <article className="min-w-[220px] snap-start rounded-xl border shadow-card transition hover:-translate-y-0.5 hover:shadow max-sm:min-w-0 max-sm:mb-5 mx-1 lg:gap-0">
       <div className="relative aspect-square overflow-hidden rounded-md bg-slate-50">
-        <SmartImage
-          src={product.imageUrl ?? "/next.svg"}
-          alt={title}
-          fill
-          className="w-full h-full object-cover"
-        />
+        <a
+          href={`/produto/${product.name
+            ?.toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9\s-]/g, "")
+            .trim()
+            .replace(/\s+/g, "-")
+            .replace(/-+/g, "-")}?id=${product.id}`}
+        >
+          <SmartImage
+            src={product.imageUrl ?? "/next.svg"}
+            alt={title}
+            fill
+            className="w-full h-full object-cover"
+          />
+        </a>
       </div>
 
       <div className="p-3">
         <div className="flex justify-between items-start flex-col lg:flex-row">
           <div>
-            <h3 className="line-clamp-2 text-sm font-medium">{title}</h3>
+            <h3 className="line-clamp-2 text-base font-medium">{title}</h3>
+
+            <div>
+              <RatingStars value={avgReviews} size={18} />
+            </div>
+
             <div className="mt-1 text-base font-semibold text-slate-900">
               {price}
             </div>
           </div>
 
-          <button
-            type="button"
-            className="rounded-lg p-2 hover:bg-gray-100 max-sm:self-end"
-            aria-label="Favoritar"
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
           >
-            <HeartIcon size={18} color="red" />
-          </button>
+            <FavoriteButton
+              product={{
+                id: product.id,
+                name: product.name || "",
+                price: product.price,
+                imageUrl: product.imageUrl || "",
+              }}
+            />
+          </div>
         </div>
 
         <div className="mt-3 flex gap-2 flex-col lg:flex-row self-end">
-          <a
-            href={`/produto/${product.name
-              ?.toLowerCase()
+          <Link
+            href={`/produto/${(product.name ?? "produto")
+              .toLowerCase()
               .normalize("NFD")
               .replace(/[\u0300-\u036f]/g, "")
               .replace(/[^a-z0-9\s-]/g, "")
               .trim()
               .replace(/\s+/g, "-")
               .replace(/-+/g, "-")}?id=${product.id}`}
-            className="inline-flex items-center rounded-lg border border-slate-400 px-3 py-1.5 text-sm hover:bg-slate-100"
+            className="inline-flex items-center rounded-lg border px-3 py-1.5 text-sm hover:bg-slate-50"
           >
             Ver detalhes
-          </a>
+          </Link>
 
           <button
             type="button"

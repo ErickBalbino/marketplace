@@ -1,8 +1,10 @@
 import Link from "next/link";
-import { LayoutGrid, Rows3 } from "lucide-react";
+import { ChevronLeft, ChevronRight, LayoutGrid, Rows3 } from "lucide-react";
 import { fetchProducts } from "@/services/products";
-import { ProductCard } from "@/components/ProductCard";
 import { Metadata } from "next";
+import { CategoryCarousel } from "@/components/home/CategoryCarousel";
+import { FilterControls } from "@/components/home/FilterControls";
+import { ProductsGrid } from "@/components/home/ProductsGrid";
 
 type View = "grid4" | "grid2" | "list";
 
@@ -11,14 +13,6 @@ export const metadata: Metadata = {
   description:
     "Encontre os melhores produtos e ofertas na sua região aqui no AllMarket",
 };
-
-function gridClasses(view: View) {
-  if (view === "grid2")
-    return "grid max-sm:grid-cols-2 grid-cols-2 gap-10 max-sm:gap-0";
-  if (view === "grid4")
-    return "grid max-sm:grid-cols-2 grid-cols-2 lg:grid-cols-4 gap-6 max-sm:gap-0";
-  return "grid grid-cols-1 gap-3";
-}
 
 function hrefWith(
   base: string,
@@ -79,11 +73,16 @@ export default async function HomePage({
       : undefined;
 
   return (
-    <main className="container py-4 max-sm:px-3">
+    <main className="container max-sm:px-3 lg:py-6 -translate-y-[120px]">
       <section className="space-y-4">
+        <CategoryCarousel />
+
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-xl font-semibold">Produtos</h2>
-          <div className="flex items-center gap-2">
+          <h2 className="text-xl font-semibold">Produtos mais vendidos</h2>
+
+          <div className="flex items-center self-end gap-2">
+            <FilterControls />
+
             <Link
               href={columnsHref}
               className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm hover:bg-slate-50 ${
@@ -93,9 +92,8 @@ export default async function HomePage({
               prefetch={false}
             >
               <LayoutGrid size={18} />
-
               {view !== "list" && (
-                <span className={`hidden sm:inline`}>
+                <span className="hidden sm:inline">
                   {view === "grid4" ? "4" : view === "grid2" && "2"}
                 </span>
               )}
@@ -103,7 +101,7 @@ export default async function HomePage({
 
             <Link
               href={listHref}
-              className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm hover:bg-slate-100 ${
+              className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm bg-white hover:bg-slate-100 ${
                 view === "list" && "bg-slate-200"
               }`}
               aria-label="Alternar lista"
@@ -114,15 +112,13 @@ export default async function HomePage({
           </div>
         </div>
 
-        <div className={gridClasses(view)}>
-          {data.products.map((p) => (
-            <ProductCard
-              key={p.id}
-              product={p}
-              variant={view === "list" ? "list" : "grid"}
-            />
-          ))}
-        </div>
+        {data.products.length === 0 && (
+          <div className="min-h-[100px] flex justify-center items-center w-full">
+            <p>Não foi encontrado nenhum produto</p>
+          </div>
+        )}
+
+        <ProductsGrid products={data.products} view={view} />
 
         <div className="mt-6 flex items-center justify-between gap-3">
           <div className="text-sm text-slate-600">
@@ -133,18 +129,18 @@ export default async function HomePage({
             <Link
               href={prevHref || "#"}
               aria-disabled={!prevHref}
-              className="rounded-xl border px-3 py-2 text-sm hover:bg-slate-50 aria-disabled:pointer-events-none aria-disabled:opacity-50"
+              className="rounded-xl border px-3 py-2 text-sm  bg-slate-300 hover:bg-slate-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 cursor-pointer"
               prefetch={false}
             >
-              Anterior
+              <ChevronLeft size={18} />
             </Link>
             <Link
               href={nextHref || "#"}
               aria-disabled={!nextHref}
-              className="rounded-xl border px-3 py-2 text-sm hover:bg-slate-50 aria-disabled:pointer-events-none aria-disabled:opacity-50"
+              className="rounded-xl border px-3 py-2 text-sm bg-slate-300 aria-disabled:pointer-events-none aria-disabled:opacity-50 cursor-pointer"
               prefetch={false}
             >
-              Próxima
+              <ChevronRight size={18} />
             </Link>
           </div>
         </div>

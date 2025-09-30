@@ -9,7 +9,8 @@ export default function StoreLayout({
     <>
       <Header />
 
-      <div className="container py-6 mt-32">
+      <div className="container">
+        <div className="h-[120px]"></div>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[260px_1fr]">
           <main id="conteudo-principal" className="min-w-0 lg:col-span-2">
             {children}

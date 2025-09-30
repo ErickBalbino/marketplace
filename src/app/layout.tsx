@@ -5,6 +5,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import ProgressLoader from "@/components/ProgressLoader";
 import { Toaster } from "sonner";
 import { getServerCart } from "@/services/cart/server";
+import { FavoritesProvider } from "@/contexts/FavoritesContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -34,7 +35,9 @@ export default async function RootLayout({
       <body className={`${inter.variable} ${jetbrains.variable} min-h-dvh`}>
         <ProgressLoader />
         <Toaster position="top-right" richColors duration={1500} />
-        <CartProvider initialCart={initialCart}>{children}</CartProvider>
+        <CartProvider initialCart={initialCart}>
+          <FavoritesProvider>{children}</FavoritesProvider>
+        </CartProvider>
       </body>
     </html>
   );

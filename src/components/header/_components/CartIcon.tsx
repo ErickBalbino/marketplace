@@ -3,11 +3,17 @@
 import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import { useEffect, useState } from "react";
 
 export function CartIcon() {
-  const { cart, isInitialized } = useCart();
+  const { cart, isLoading } = useCart();
+  const [isClient, setIsClient] = useState(false);
 
-  if (!isInitialized) {
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient || isLoading) {
     return (
       <div className="inline-flex items-center rounded-md p-2 relative transition-colors">
         <ShoppingCart size={22} className="opacity-50" />

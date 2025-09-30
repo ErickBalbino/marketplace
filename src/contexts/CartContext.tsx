@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -32,34 +33,23 @@ type CartAction =
   | { type: "SET_CART"; payload: Cart }
   | { type: "SET_LOADING"; payload: boolean }
   | { type: "SET_INITIALIZED"; payload: boolean }
-  | {
-      type: "ADD_ITEM_OPTIMISTIC";
-      payload: {
-        productId: string;
-        productData?: Partial<Cart["items"][0]>;
-        quantity: number;
-      };
-    }
-  | { type: "REMOVE_ITEM_OPTIMISTIC"; payload: string }
-  | {
-      type: "UPDATE_QUANTITY_OPTIMISTIC";
-      payload: { productId: string; quantity: number };
-    };
+  | { type: "OPTIMISTIC_UPDATE_START"; payload: { id: string; type: string } }
+  | { type: "OPTIMISTIC_UPDATE_END"; payload: { id: string } };
 
-function cartReducer(
-  state: {
-    cart: Cart;
-    isLoading: boolean;
-    isInitialized: boolean;
-  },
-  action: CartAction,
-): { cart: Cart; isLoading: boolean; isInitialized: boolean } {
+interface CartState {
+  cart: Cart;
+  isLoading: boolean;
+  isInitialized: boolean;
+  optimisticUpdates: Map<string, string>;
+}
+
+function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
     case "SET_CART":
       return {
         ...state,
         cart: action.payload,
-        isInitialized: true,
+        isLoading: false,
       };
 
     case "SET_LOADING":
@@ -68,78 +58,41 @@ function cartReducer(
     case "SET_INITIALIZED":
       return { ...state, isInitialized: action.payload };
 
-    case "ADD_ITEM_OPTIMISTIC": {
-      const { productId, productData, quantity } = action.payload;
-      const existingItem = state.cart.items.find(
-        (item) => item.id === productId,
-      );
-
-      let newItems;
-      if (existingItem) {
-        newItems = state.cart.items.map((item) =>
-          item.id === productId
-            ? { ...item, quantity: item.quantity + quantity }
-            : item,
-        );
-      } else {
-        const newItem = {
-          id: productId,
-          name: productData?.name || "Produto",
-          price: productData?.price || 0,
-          imageUrl: productData?.imageUrl || "",
-          quantity: quantity,
-        };
-        newItems = [...state.cart.items, newItem];
-      }
-
-      const newTotal = newItems.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0,
-      );
+    case "OPTIMISTIC_UPDATE_START":
+      const newUpdates = new Map(state.optimisticUpdates);
+      newUpdates.set(action.payload.id, action.payload.type);
       return {
         ...state,
-        cart: { items: newItems, total: newTotal },
+        optimisticUpdates: newUpdates,
+        isLoading: true,
       };
-    }
 
-    case "REMOVE_ITEM_OPTIMISTIC": {
-      const newItems = state.cart.items.filter(
-        (item) => item.id !== action.payload,
-      );
-      const newTotal = newItems.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0,
-      );
+    case "OPTIMISTIC_UPDATE_END":
+      const updates = new Map(state.optimisticUpdates);
+      updates.delete(action.payload.id);
       return {
         ...state,
-        cart: { items: newItems, total: newTotal },
+        optimisticUpdates: updates,
+        isLoading: updates.size > 0,
       };
-    }
-
-    case "UPDATE_QUANTITY_OPTIMISTIC": {
-      const { productId, quantity } = action.payload;
-      const newItems = state.cart.items
-        .map((item) =>
-          item.id === productId
-            ? { ...item, quantity: Math.max(0, quantity) }
-            : item,
-        )
-        .filter((item) => item.quantity > 0);
-
-      const newTotal = newItems.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0,
-      );
-      return {
-        ...state,
-        cart: { items: newItems, total: newTotal },
-      };
-    }
 
     default:
       return state;
   }
 }
+
+const globalCartCache = {
+  current: { items: [], total: 0 } as Cart,
+  listeners: new Set<() => void>(),
+  update(cart: Cart) {
+    this.current = cart;
+    this.listeners.forEach((listener) => listener());
+  },
+  subscribe(listener: () => void) {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
+  },
+};
 
 export function CartProvider({
   children,
@@ -152,152 +105,213 @@ export function CartProvider({
     cart: initialCart,
     isLoading: false,
     isInitialized: false,
+    optimisticUpdates: new Map(),
   });
 
-  const operationInProgress = useRef(false);
+  const operationQueue = useRef<Map<string, Promise<any>>>(new Map());
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    globalCartCache.update(initialCart);
+
+    const unsubscribe = globalCartCache.subscribe(() => {
+      if (isMounted.current && !state.isLoading) {
+        dispatch({ type: "SET_CART", payload: globalCartCache.current });
+      }
+    });
+
+    return () => {
+      isMounted.current = false;
+      unsubscribe();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const initializeCart = async () => {
-      if (operationInProgress.current) return;
-      operationInProgress.current = true;
+      if (state.isInitialized) return;
 
       try {
         dispatch({ type: "SET_LOADING", payload: true });
-
         const serverCart = await cartService.fetchCart();
-        dispatch({ type: "SET_CART", payload: serverCart });
+
+        if (isMounted.current) {
+          globalCartCache.update(serverCart);
+          dispatch({ type: "SET_CART", payload: serverCart });
+          dispatch({ type: "SET_INITIALIZED", payload: true });
+        }
       } catch (error) {
         console.error("Failed to initialize cart:", error);
-        dispatch({ type: "SET_CART", payload: initialCart });
+        if (isMounted.current) {
+          dispatch({ type: "SET_CART", payload: initialCart });
+          dispatch({ type: "SET_INITIALIZED", payload: true });
+        }
       } finally {
-        dispatch({ type: "SET_LOADING", payload: false });
-        operationInProgress.current = false;
+        if (isMounted.current) {
+          dispatch({ type: "SET_LOADING", payload: false });
+        }
       }
     };
 
     initializeCart();
-  }, [initialCart]);
+  }, [initialCart, state.isInitialized]);
 
-  const refreshCart = useCallback(async () => {
-    if (operationInProgress.current || !state.isInitialized) return;
-
+  const refreshCart = useCallback(async (): Promise<void> => {
     try {
       const cart = await cartService.fetchCart();
-      dispatch({ type: "SET_CART", payload: cart });
+      if (isMounted.current) {
+        globalCartCache.update(cart);
+        dispatch({ type: "SET_CART", payload: cart });
+      }
     } catch (error) {
       console.error("Failed to refresh cart:", error);
     }
-  }, [state.isInitialized]);
+  }, []);
 
-  useEffect(() => {
-    if (!state.isInitialized) return;
+  const executeWithQueue = useCallback(
+    async <T,>(
+      operationId: string,
+      operation: () => Promise<T>,
+    ): Promise<T> => {
+      const existingOperation = operationQueue.current.get(operationId);
+      if (existingOperation) {
+        await existingOperation;
+      }
 
-    const interval = setInterval(() => {
-      refreshCart();
-    }, 30000);
+      const operationPromise = (async () => {
+        try {
+          return await operation();
+        } finally {
+          operationQueue.current.delete(operationId);
+        }
+      })();
 
-    return () => clearInterval(interval);
-  }, [refreshCart, state.isInitialized]);
+      operationQueue.current.set(operationId, operationPromise);
+      return operationPromise;
+    },
+    [],
+  );
 
   const addItem = useCallback(
-    async (
+    (
       productId: string,
       productData?: Partial<Cart["items"][0]>,
       quantity: number = 1,
-    ) => {
-      if (operationInProgress.current) {
-        throw new Error("Operação em andamento");
-      }
+    ): Promise<void> => {
+      return executeWithQueue(`add-${productId}`, async (): Promise<void> => {
+        const operationId = `${productId}-${Date.now()}`;
 
-      operationInProgress.current = true;
+        try {
+          dispatch({
+            type: "OPTIMISTIC_UPDATE_START",
+            payload: { id: operationId, type: "add" },
+          });
 
-      const previousCart = state.cart;
-
-      dispatch({
-        type: "ADD_ITEM_OPTIMISTIC",
-        payload: { productId, productData, quantity },
+          await cartService.addToCart(productId, quantity);
+          await refreshCart();
+        } catch (error) {
+          console.error("Add item failed:", error);
+          await refreshCart();
+          throw error;
+        } finally {
+          if (isMounted.current) {
+            dispatch({
+              type: "OPTIMISTIC_UPDATE_END",
+              payload: { id: operationId },
+            });
+          }
+        }
       });
-
-      try {
-        const serverCart = await cartService.addToCart(productId, quantity);
-        dispatch({ type: "SET_CART", payload: serverCart });
-      } catch (error) {
-        dispatch({ type: "SET_CART", payload: previousCart });
-        throw error;
-      } finally {
-        operationInProgress.current = false;
-      }
     },
-    [state.cart],
+    [executeWithQueue, refreshCart],
   );
 
   const removeItem = useCallback(
-    async (productId: string) => {
-      if (operationInProgress.current) {
-        throw new Error("Operação em andamento");
-      }
+    (productId: string): Promise<void> => {
+      return executeWithQueue(
+        `remove-${productId}`,
+        async (): Promise<void> => {
+          const operationId = `${productId}-${Date.now()}`;
 
-      operationInProgress.current = true;
+          try {
+            dispatch({
+              type: "OPTIMISTIC_UPDATE_START",
+              payload: { id: operationId, type: "remove" },
+            });
 
-      const previousCart = state.cart;
-
-      dispatch({ type: "REMOVE_ITEM_OPTIMISTIC", payload: productId });
-
-      try {
-        const serverCart = await cartService.removeFromCart(productId);
-        dispatch({ type: "SET_CART", payload: serverCart });
-      } catch (error) {
-        dispatch({ type: "SET_CART", payload: previousCart });
-        throw error;
-      } finally {
-        operationInProgress.current = false;
-      }
+            await cartService.removeFromCart(productId);
+            await refreshCart();
+          } catch (error) {
+            console.error("Remove item failed:", error);
+            await refreshCart();
+            throw error;
+          } finally {
+            if (isMounted.current) {
+              dispatch({
+                type: "OPTIMISTIC_UPDATE_END",
+                payload: { id: operationId },
+              });
+            }
+          }
+        },
+      );
     },
-    [state.cart],
+    [executeWithQueue, refreshCart],
   );
 
   const increaseQuantity = useCallback(
-    async (productId: string) => {
-      const item = state.cart.items.find((item) => item.id === productId);
-      if (!item) return;
+    (productId: string): Promise<void> => {
+      return executeWithQueue(
+        `increase-${productId}`,
+        async (): Promise<void> => {
+          const item = state.cart.items.find((item) => item.id === productId);
+          if (!item) {
+            throw new Error("Item not found in cart");
+          }
 
-      await addItem(productId, item, 1);
+          await addItem(productId, item, 1);
+        },
+      );
     },
-    [addItem, state.cart.items],
+    [executeWithQueue, addItem, state.cart.items],
   );
 
   const decreaseQuantity = useCallback(
-    async (productId: string) => {
-      if (operationInProgress.current) return;
-      operationInProgress.current = true;
+    (productId: string): Promise<void> => {
+      return executeWithQueue(
+        `decrease-${productId}`,
+        async (): Promise<void> => {
+          const item = state.cart.items.find((item) => item.id === productId);
+          if (!item) {
+            throw new Error("Item not found in cart");
+          }
 
-      const item = state.cart.items.find((item) => item.id === productId);
-      if (!item) return;
+          const operationId = `${productId}-${Date.now()}`;
 
-      const previousCart = state.cart;
-      const newQuantity = item.quantity - 1;
+          try {
+            dispatch({
+              type: "OPTIMISTIC_UPDATE_START",
+              payload: { id: operationId, type: "decrease" },
+            });
 
-      if (newQuantity <= 0) {
-        await removeItem(productId);
-        return;
-      }
-
-      dispatch({
-        type: "UPDATE_QUANTITY_OPTIMISTIC",
-        payload: { productId, quantity: newQuantity },
-      });
-
-      try {
-        const serverCart = await cartService.decreaseQuantity(productId, 1);
-        dispatch({ type: "SET_CART", payload: serverCart });
-      } catch (error) {
-        dispatch({ type: "SET_CART", payload: previousCart });
-        throw error;
-      } finally {
-        operationInProgress.current = false;
-      }
+            await cartService.decreaseQuantity(productId, 1);
+            await refreshCart();
+          } catch (error) {
+            console.error("Decrease quantity failed:", error);
+            await refreshCart();
+            throw error;
+          } finally {
+            if (isMounted.current) {
+              dispatch({
+                type: "OPTIMISTIC_UPDATE_END",
+                payload: { id: operationId },
+              });
+            }
+          }
+        },
+      );
     },
-    [removeItem, state.cart],
+    [executeWithQueue, refreshCart, state.cart.items],
   );
 
   const value: CartContextType = {
